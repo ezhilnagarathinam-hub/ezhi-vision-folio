@@ -17,8 +17,7 @@ import {
   CheckCircle2,
   Instagram,
   Youtube,
-  Send,
-  MessageCircle,
+  Linkedin,
   Mail,
   LogIn,
   Lock
@@ -346,19 +345,11 @@ const Index = () => {
             </Button>
             <Button 
               size="lg" 
-              className="bg-[#0088cc] hover:bg-[#006699] text-white font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
-              onClick={() => window.open(contactContent.telegram || 'https://telegram.org', '_blank')}
+              className="bg-[#0077B5] hover:bg-[#006097] text-white font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
+              onClick={() => window.open(contactContent.linkedin || 'https://linkedin.com', '_blank')}
             >
-              <Send className="w-5 h-5 mr-2" />
-              Telegram
-            </Button>
-            <Button 
-              size="lg" 
-              className="bg-[#25D366] hover:bg-[#1DA851] text-white font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
-              onClick={() => window.open(contactContent.whatsapp || 'https://whatsapp.com', '_blank')}
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              WhatsApp
+              <Linkedin className="w-5 h-5 mr-2" />
+              LinkedIn
             </Button>
             <Button 
               size="lg" 
