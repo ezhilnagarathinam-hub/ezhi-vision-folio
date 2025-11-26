@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { 
+import { useToast } from "@/hooks/use-toast";
+import {
   BookOpen, 
   Calendar, 
   Target, 
@@ -45,6 +46,7 @@ const Index = () => {
   const [content, setContent] = useState<Record<string, any>>({});
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchContent();
@@ -106,7 +108,13 @@ const Index = () => {
             </Button>
           ) : (
             <Button 
-              onClick={() => navigate('/auth')}
+              onClick={() => {
+                toast({
+                  variant: "destructive",
+                  title: "Access Restricted",
+                  description: "Only for admin. This area is restricted to administrators only.",
+                });
+              }}
               variant="outline"
               className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
@@ -176,28 +184,65 @@ const Index = () => {
       </section>
 
       {/* Posts Section */}
-      {featuredPost && (
-        <section className="py-12 px-4 bg-secondary/30">
-          <div className="container mx-auto max-w-6xl">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8">Recent Posts</h2>
-            <Card className="p-8 border-0 shadow-xl hover:shadow-2xl transition-all">
-              {featuredPost.image_url && (
-                <img 
-                  src={featuredPost.image_url} 
-                  alt={featuredPost.title}
-                  className="w-full h-64 object-cover rounded-lg mb-6"
-                />
-              )}
-              <h3 className="text-3xl font-bold text-foreground mb-4">{featuredPost.title}</h3>
-              <p className="text-lg text-foreground/70 mb-4">{featuredPost.excerpt}</p>
-              <p className="text-sm text-muted-foreground">
-                {new Date(featuredPost.created_at).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </p>
-            </Card>
+      {posts.length > 0 && (
+        <section className="py-16 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-7xl">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-10">Recent Posts</h2>
+            
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Featured Post - Full Width */}
+              <div className="lg:col-span-2">
+                {featuredPost && (
+                  <Card className="p-8 border-0 shadow-xl hover:shadow-2xl transition-all h-full">
+                    {featuredPost.image_url && (
+                      <img 
+                        src={featuredPost.image_url} 
+                        alt={featuredPost.title}
+                        className="w-full h-80 object-cover rounded-lg mb-6"
+                      />
+                    )}
+                    <h3 className="text-3xl font-bold text-foreground mb-4">{featuredPost.title}</h3>
+                    <p className="text-lg text-muted-foreground mb-4 leading-relaxed">{featuredPost.excerpt}</p>
+                    <div className="text-sm text-muted-foreground flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      {new Date(featuredPost.created_at).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </div>
+                  </Card>
+                )}
+              </div>
+
+              {/* Earlier Posts Sidebar */}
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold text-foreground mb-6">Earlier Posts</h3>
+                {sidebarPosts.length > 0 ? (
+                  <div className="space-y-3">
+                    {sidebarPosts.map((post) => (
+                      <Card 
+                        key={post.id} 
+                        className="p-4 border border-border hover:border-primary hover:shadow-lg transition-all cursor-pointer"
+                      >
+                        <h4 className="font-semibold text-foreground mb-2 line-clamp-2">{post.title}</h4>
+                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{post.excerpt}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(post.created_at).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-sm">No earlier posts yet.</p>
+                )}
+              </div>
+            </div>
           </div>
         </section>
       )}

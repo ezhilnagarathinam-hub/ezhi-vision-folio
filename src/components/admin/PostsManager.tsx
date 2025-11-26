@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, Upload, X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/lib/auth';
 
@@ -31,6 +31,9 @@ const PostsManager = () => {
     image_url: '',
     published: false
   });
+  const [uploading, setUploading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -58,15 +61,62 @@ const PostsManager = () => {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!imageFile) return formData.image_url || null;
+
+    setUploading(true);
+    try {
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('post-images')
+        .upload(filePath, imageFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('post-images')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Image upload failed",
+        description: error.message
+      });
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
     try {
+      const imageUrl = await uploadImage();
+      const postData = { ...formData, image_url: imageUrl };
+
       if (editing) {
         const { error } = await supabase
           .from('posts')
-          .update(formData)
+          .update(postData)
           .eq('id', editing);
 
         if (error) throw error;
@@ -74,7 +124,7 @@ const PostsManager = () => {
       } else {
         const { error } = await supabase
           .from('posts')
-          .insert([{ ...formData, author_id: user.id }]);
+          .insert([{ ...postData, author_id: user.id }]);
 
         if (error) throw error;
         toast({ title: "Post created successfully" });
@@ -100,6 +150,8 @@ const PostsManager = () => {
       image_url: post.image_url || '',
       published: post.published
     });
+    setImagePreview(post.image_url);
+    setImageFile(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -132,6 +184,8 @@ const PostsManager = () => {
       image_url: '',
       published: false
     });
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   if (loading) {
@@ -183,13 +237,41 @@ const PostsManager = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="image_url">Image URL (optional)</Label>
-            <Input
-              id="image_url"
-              type="url"
-              value={formData.image_url}
-              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-            />
+            <Label htmlFor="image">Post Image (optional)</Label>
+            <div className="flex flex-col gap-3">
+              {imagePreview && (
+                <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border">
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2"
+                    onClick={() => {
+                      setImageFile(null);
+                      setImagePreview(null);
+                      setFormData({ ...formData, image_url: '' });
+                    }}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <Input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="flex-1"
+                />
+                <Upload className="w-4 h-4 text-muted-foreground" />
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -202,8 +284,19 @@ const PostsManager = () => {
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" className="bg-primary hover:bg-primary/90">
-              {editing ? 'Update Post' : 'Create Post'}
+            <Button 
+              type="submit" 
+              className="bg-primary hover:bg-primary/90"
+              disabled={uploading}
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                editing ? 'Update Post' : 'Create Post'
+              )}
             </Button>
             {editing && (
               <Button type="button" variant="outline" onClick={resetForm}>
