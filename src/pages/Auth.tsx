@@ -174,6 +174,32 @@ const Auth = () => {
               isLogin ? 'Sign In' : 'Sign Up'
             )}
           </Button>
+
+          {isLogin && (
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or</span>
+              </div>
+            </div>
+          )}
+
+          {isLogin && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-2"
+              onClick={() => {
+                setEmail('demo@eadreamsupporters.com');
+                setPassword('demo123456');
+              }}
+              disabled={loading}
+            >
+              Try Demo Login
+            </Button>
+          )}
         </form>
 
         <div className="mt-6 text-center">
