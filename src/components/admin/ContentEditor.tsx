@@ -68,6 +68,34 @@ const ContentEditor = () => {
     }
   };
 
+  const handleImageUpload = async (file: File, type: 'profile' | 'background') => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${type}-${Date.now()}.${fileExt}`;
+      const filePath = `images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('post-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('post-images')
+        .getPublicUrl(filePath);
+
+      toast({ title: "Image uploaded successfully" });
+      return data.publicUrl;
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: error.message
+      });
+      return null;
+    }
+  };
+
   const handleHeroUpdate = (section: ContentSection) => {
     const content = section.content;
     return (
@@ -108,6 +136,46 @@ const ContentEditor = () => {
               }
             }}
           />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="profile-image">Profile Photo</Label>
+          <Input
+            id="profile-image"
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const url = await handleImageUpload(file, 'profile');
+                if (url) {
+                  updateSection(section.section_key, { ...content, profileImage: url });
+                }
+              }
+            }}
+          />
+          {content.profileImage && (
+            <img src={content.profileImage} alt="Profile preview" className="w-32 h-32 rounded-full object-cover mt-2" />
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="background-image">Hero Background Photo</Label>
+          <Input
+            id="background-image"
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const url = await handleImageUpload(file, 'background');
+                if (url) {
+                  updateSection(section.section_key, { ...content, backgroundImage: url });
+                }
+              }
+            }}
+          />
+          {content.backgroundImage && (
+            <img src={content.backgroundImage} alt="Background preview" className="w-full h-32 object-cover rounded-lg mt-2" />
+          )}
         </div>
       </div>
     );
