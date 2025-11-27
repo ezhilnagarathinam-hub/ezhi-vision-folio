@@ -91,6 +91,9 @@ const Index = () => {
   const missionContent = content.mission || {};
   const visionContent = content.vision || {};
   const contactContent = content.contact || {};
+  
+  const heroBackgroundUrl = heroContent.backgroundImage || heroBackground;
+  const profileImageUrl = heroContent.profileImage || profileImage;
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,13 +111,7 @@ const Index = () => {
             </Button>
           ) : (
             <Button 
-              onClick={() => {
-                toast({
-                  variant: "destructive",
-                  title: "Access Restricted",
-                  description: "Only for admin. This area is restricted to administrators only.",
-                });
-              }}
+              onClick={() => navigate('/auth')}
               variant="outline"
               className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
@@ -126,10 +123,10 @@ const Index = () => {
       </header>
 
       {/* Hero Section with Background */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">
+      <section className="relative min-h-[70vh] flex items-center justify-center px-4 py-16 overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroBackground})` }}
+          style={{ backgroundImage: `url(${heroBackgroundUrl})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/60"></div>
         </div>
@@ -173,9 +170,9 @@ const Index = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/60 rounded-full blur-3xl opacity-20"></div>
                 <img 
-                  src={profileImage} 
+                  src={profileImageUrl} 
                   alt="Ezhil - Founder of EA Dream Supporters"
-                  className="relative w-80 h-80 md:w-96 md:h-96 rounded-full object-cover border-4 border-background shadow-2xl"
+                  className="relative w-64 h-64 md:w-80 md:h-80 rounded-full object-cover border-4 border-background shadow-2xl"
                 />
               </div>
             </div>
