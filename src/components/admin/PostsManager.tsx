@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Loader2, Upload, X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/lib/auth';
+import { ImageCropDialog } from './ImageCropDialog';
 
 interface Post {
   id: string;
@@ -34,6 +35,8 @@ const PostsManager = () => {
   const [uploading, setUploading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [currentImageSrc, setCurrentImageSrc] = useState("");
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -64,13 +67,23 @@ const PostsManager = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        setCurrentImageSrc(reader.result as string);
+        setCropDialogOpen(true);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropComplete = (croppedBlob: Blob) => {
+    const file = new File([croppedBlob], "cropped-image.jpg", { type: "image/jpeg" });
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(croppedBlob);
   };
 
   const uploadImage = async (): Promise<string | null> => {
@@ -237,7 +250,7 @@ const PostsManager = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="image">Post Image (optional)</Label>
+            <Label htmlFor="image">Post Image (Recommended: 1200×630px)</Label>
             <div className="flex flex-col gap-3">
               {imagePreview && (
                 <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border">
@@ -359,6 +372,15 @@ const PostsManager = () => {
           </div>
         )}
       </div>
+      <ImageCropDialog
+        open={cropDialogOpen}
+        onOpenChange={setCropDialogOpen}
+        imageSrc={currentImageSrc}
+        onCropComplete={handleCropComplete}
+        aspectRatio={16 / 9}
+        circularCrop={false}
+        title="Crop Post Image"
+      />
     </div>
   );
 };
