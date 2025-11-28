@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogOut, Loader2 } from 'lucide-react';
 import PostsManager from '@/components/admin/PostsManager';
 import ContentEditor from '@/components/admin/ContentEditor';
+import BusinessManager from '@/components/admin/BusinessManager';
+import ServicesManager from '@/components/admin/ServicesManager';
 
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -55,13 +57,23 @@ const Admin = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="posts" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="posts">Posts</TabsTrigger>
+            <TabsTrigger value="business">Business</TabsTrigger>
+            <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="content">Content</TabsTrigger>
           </TabsList>
 
           <TabsContent value="posts" className="mt-6">
             <PostsManager />
+          </TabsContent>
+
+          <TabsContent value="business" className="mt-6">
+            <BusinessManager />
+          </TabsContent>
+
+          <TabsContent value="services" className="mt-6">
+            <ServicesManager />
           </TabsContent>
 
           <TabsContent value="content" className="mt-6">

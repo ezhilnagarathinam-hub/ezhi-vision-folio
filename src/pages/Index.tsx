@@ -21,10 +21,14 @@ import {
   Linkedin,
   Mail,
   LogIn,
-  Lock
+  Lock,
+  ExternalLink,
+  Building2
 } from "lucide-react";
 import profileImage from "@/assets/ezhil-profile.jpg";
 import heroBackground from "@/assets/hero-background.jpg";
+import { PostDialog } from "@/components/PostDialog";
+import { ServiceDetailDialog } from "@/components/ServiceDetailDialog";
 
 interface Post {
   id: string;
@@ -44,6 +48,10 @@ interface ContentSection {
 const Index = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [content, setContent] = useState<Record<string, any>>({});
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [postDialogOpen, setPostDialogOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+  const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -91,6 +99,8 @@ const Index = () => {
   const missionContent = content.mission || {};
   const visionContent = content.vision || {};
   const contactContent = content.contact || {};
+  const businessContent = content.business || { businesses: [] };
+  const servicesContent = content.services || { services: [] };
   
   const heroBackgroundUrl = heroContent.backgroundImage || heroBackground;
   const profileImageUrl = heroContent.profileImage || profileImage;
@@ -101,24 +111,33 @@ const Index = () => {
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold text-foreground">Ezhil</h1>
-          {user ? (
+          <div className="flex items-center gap-4">
             <Button 
-              onClick={() => navigate('/admin')}
-              className="bg-primary hover:bg-primary/90"
+              variant="ghost"
+              onClick={() => navigate('/blog')}
+              className="text-foreground hover:text-primary"
             >
-              {isAdmin ? <Lock className="w-4 h-4 mr-2" /> : null}
-              {isAdmin ? 'Admin Panel' : 'Dashboard'}
+              My Blog
             </Button>
-          ) : (
-            <Button 
-              onClick={() => navigate('/auth')}
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <LogIn className="w-4 h-4 mr-2" />
-              Login
-            </Button>
-          )}
+            {user ? (
+              <Button 
+                onClick={() => navigate('/admin')}
+                className="bg-primary hover:bg-primary/90"
+              >
+                {isAdmin ? <Lock className="w-4 h-4 mr-2" /> : null}
+                {isAdmin ? 'Admin Panel' : 'Dashboard'}
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => navigate('/auth')}
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Login
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -221,6 +240,10 @@ const Index = () => {
                       <Card 
                         key={post.id} 
                         className="p-4 border border-border hover:border-primary hover:shadow-lg transition-all cursor-pointer"
+                        onClick={() => {
+                          setSelectedPost(post);
+                          setPostDialogOpen(true);
+                        }}
                       >
                         <h4 className="font-semibold text-foreground mb-2 line-clamp-2">{post.title}</h4>
                         <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{post.excerpt}</p>
@@ -308,7 +331,14 @@ const Index = () => {
               <div className="sticky top-24 space-y-4">
                 <h3 className="text-2xl font-bold text-foreground mb-6">More Posts</h3>
                 {sidebarPosts.map((post) => (
-                  <Card key={post.id} className="p-4 border-0 shadow-md hover:shadow-lg transition-all cursor-pointer">
+                  <Card 
+                    key={post.id} 
+                    className="p-4 border-0 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                    onClick={() => {
+                      setSelectedPost(post);
+                      setPostDialogOpen(true);
+                    }}
+                  >
                     {post.image_url && (
                       <img 
                         src={post.image_url} 
@@ -329,6 +359,39 @@ const Index = () => {
         </div>
       </div>
 
+      {/* My Business Section */}
+      <section className="py-16 px-4 bg-muted/50">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center space-y-4 mb-12">
+            <h2 className="text-5xl font-bold text-foreground">My Business</h2>
+            <div className="w-24 h-1 bg-primary mx-auto rounded-full"></div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {businessContent.businesses?.map((business: any, index: number) => (
+              <Card 
+                key={index} 
+                className="p-6 border-0 shadow-md hover:shadow-xl transition-all group cursor-pointer"
+                onClick={() => business.website && window.open(business.website, '_blank')}
+              >
+                {business.logo && (
+                  <img 
+                    src={business.logo} 
+                    alt={business.name}
+                    className="w-20 h-20 object-contain mb-4"
+                  />
+                )}
+                <h3 className="text-xl font-bold text-foreground mb-2 flex items-center gap-2">
+                  {business.name}
+                  <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                </h3>
+                <p className="text-foreground/70">{business.description}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Services */}
       <section className="py-16 px-4 bg-secondary/20">
         <div className="container mx-auto max-w-6xl">
@@ -338,22 +401,41 @@ const Index = () => {
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { icon: Calendar, title: "Preparation Management", desc: "Structured exam prep systems" },
-              { icon: BookOpen, title: "Daily Schedule Planning", desc: "Personalized study schedules" },
-              { icon: CheckCircle2, title: "Task Management", desc: "Track progress efficiently" },
-              { icon: TrendingUp, title: "Productivity Tracking", desc: "Monitor student performance" },
-              { icon: Award, title: "Mock Test Integration", desc: "Practice with real patterns" },
-              { icon: Users, title: "Student Support", desc: "Motivation & guidance" }
-            ].map((service, index) => (
-              <Card key={index} className="p-6 border-0 shadow-md hover:shadow-xl transition-all group cursor-pointer">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:scale-110 transition-all">
-                  <service.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">{service.title}</h3>
-                <p className="text-foreground/70">{service.desc}</p>
-              </Card>
-            ))}
+            {servicesContent.services?.length > 0 ? (
+              servicesContent.services.map((service: any, index: number) => (
+                <Card 
+                  key={index} 
+                  className="p-6 border-0 shadow-md hover:shadow-xl transition-all group cursor-pointer"
+                  onClick={() => {
+                    setSelectedService(service);
+                    setServiceDialogOpen(true);
+                  }}
+                >
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:scale-110 transition-all">
+                    <Building2 className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-2">{service.title}</h3>
+                  <p className="text-foreground/70">{service.description}</p>
+                </Card>
+              ))
+            ) : (
+              [
+                { icon: Calendar, title: "Preparation Management", desc: "Structured exam prep systems" },
+                { icon: BookOpen, title: "Daily Schedule Planning", desc: "Personalized study schedules" },
+                { icon: CheckCircle2, title: "Task Management", desc: "Track progress efficiently" },
+                { icon: TrendingUp, title: "Productivity Tracking", desc: "Monitor student performance" },
+                { icon: Award, title: "Mock Test Integration", desc: "Practice with real patterns" },
+                { icon: Users, title: "Student Support", desc: "Motivation & guidance" }
+              ].map((service, index) => (
+                <Card key={index} className="p-6 border-0 shadow-md hover:shadow-xl transition-all group">
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:scale-110 transition-all">
+                    <service.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-2">{service.title}</h3>
+                  <p className="text-foreground/70">{service.desc}</p>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -417,6 +499,19 @@ const Index = () => {
           </p>
         </div>
       </footer>
+
+      <PostDialog 
+        post={selectedPost}
+        posts={posts}
+        open={postDialogOpen}
+        onOpenChange={setPostDialogOpen}
+      />
+
+      <ServiceDetailDialog 
+        service={selectedService}
+        open={serviceDialogOpen}
+        onOpenChange={setServiceDialogOpen}
+      />
     </div>
   );
 };
