@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ImageCropDialog } from './ImageCropDialog';
 
 interface ContentSection {
   id: string;
@@ -20,6 +21,10 @@ const ContentEditor = () => {
   const [sections, setSections] = useState<ContentSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [currentImageSrc, setCurrentImageSrc] = useState("");
+  const [currentImageType, setCurrentImageType] = useState<"profile" | "background">("profile");
+  const [currentSectionKey, setCurrentSectionKey] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -68,31 +73,53 @@ const ContentEditor = () => {
     }
   };
 
-  const handleImageUpload = async (file: File, type: 'profile' | 'background') => {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${type}-${Date.now()}.${fileExt}`;
-      const filePath = `images/${fileName}`;
+  const handleImageSelect = (
+    file: File,
+    sectionKey: string,
+    imageType: "profile" | "background"
+  ) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCurrentImageSrc(reader.result as string);
+      setCurrentImageType(imageType);
+      setCurrentSectionKey(sectionKey);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
 
-      const { error: uploadError } = await supabase.storage
-        .from('post-images')
-        .upload(filePath, file);
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    setSaving(true);
+    try {
+      const fileName = `${currentImageType}-${Date.now()}.jpg`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("post-images")
+        .upload(fileName, croppedBlob);
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage
-        .from('post-images')
-        .getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage
+        .from("post-images")
+        .getPublicUrl(uploadData.path);
 
-      toast({ title: "Image uploaded successfully" });
-      return data.publicUrl;
+      const section = sections.find((s) => s.section_key === currentSectionKey);
+      if (!section) return;
+
+      const updatedContent = {
+        ...section.content,
+        [`${currentImageType}Image`]: publicUrl,
+      };
+
+      await updateSection(currentSectionKey, updatedContent);
+      toast({ title: `${currentImageType === "profile" ? "Profile" : "Background"} image updated successfully` });
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Upload failed",
         description: error.message
       });
-      return null;
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -138,19 +165,14 @@ const ContentEditor = () => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="profile-image">Profile Photo</Label>
+          <Label htmlFor="profile-image">Profile Photo (Recommended: Square, min 400×400px)</Label>
           <Input
             id="profile-image"
             type="file"
             accept="image/*"
-            onChange={async (e) => {
+            onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) {
-                const url = await handleImageUpload(file, 'profile');
-                if (url) {
-                  updateSection(section.section_key, { ...content, profileImage: url });
-                }
-              }
+              if (file) handleImageSelect(file, section.section_key, "profile");
             }}
           />
           {content.profileImage && (
@@ -158,19 +180,14 @@ const ContentEditor = () => {
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="background-image">Hero Background Photo</Label>
+          <Label htmlFor="background-image">Hero Background Photo (Recommended: 1920×1080px)</Label>
           <Input
             id="background-image"
             type="file"
             accept="image/*"
-            onChange={async (e) => {
+            onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) {
-                const url = await handleImageUpload(file, 'background');
-                if (url) {
-                  updateSection(section.section_key, { ...content, backgroundImage: url });
-                }
-              }
+              if (file) handleImageSelect(file, section.section_key, "background");
             }}
           />
           {content.backgroundImage && (
@@ -294,6 +311,15 @@ const ContentEditor = () => {
       <p className="text-sm text-muted-foreground">
         * Changes are saved automatically when you click away from a field
       </p>
+      <ImageCropDialog
+        open={cropDialogOpen}
+        onOpenChange={setCropDialogOpen}
+        imageSrc={currentImageSrc}
+        onCropComplete={handleCropComplete}
+        aspectRatio={currentImageType === "profile" ? 1 : 16 / 9}
+        circularCrop={currentImageType === "profile"}
+        title={`Crop ${currentImageType === "profile" ? "Profile" : "Background"} Image`}
+      />
     </div>
   );
 };
