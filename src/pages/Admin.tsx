@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { LogOut, Loader2 } from 'lucide-react';
 import PostsManager from '@/components/admin/PostsManager';
 import ContentEditor from '@/components/admin/ContentEditor';
 import BusinessManager from '@/components/admin/BusinessManager';
 import ServicesManager from '@/components/admin/ServicesManager';
+import SectionManager from '@/components/admin/SectionManager';
 
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -57,12 +59,20 @@ const Admin = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="posts" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4">
-            <TabsTrigger value="posts">Posts</TabsTrigger>
-            <TabsTrigger value="business">Business</TabsTrigger>
-            <TabsTrigger value="services">Services</TabsTrigger>
-            <TabsTrigger value="content">Content</TabsTrigger>
-          </TabsList>
+          <ScrollArea className="w-full">
+            <TabsList className="inline-flex w-max">
+              <TabsTrigger value="posts">Posts</TabsTrigger>
+              <TabsTrigger value="business">Business</TabsTrigger>
+              <TabsTrigger value="services">Services</TabsTrigger>
+              <TabsTrigger value="experience">Experience</TabsTrigger>
+              <TabsTrigger value="featured">Featured</TabsTrigger>
+              <TabsTrigger value="certifications">Certifications</TabsTrigger>
+              <TabsTrigger value="skills">Skills</TabsTrigger>
+              <TabsTrigger value="education">Education</TabsTrigger>
+              <TabsTrigger value="content">Content</TabsTrigger>
+            </TabsList>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
 
           <TabsContent value="posts" className="mt-6">
             <PostsManager />
@@ -74,6 +84,81 @@ const Admin = () => {
 
           <TabsContent value="services" className="mt-6">
             <ServicesManager />
+          </TabsContent>
+
+          <TabsContent value="experience" className="mt-6">
+            <SectionManager 
+              sectionKey="experience"
+              sectionName="Experience"
+              fields={{
+                title: true,
+                subtitle: true,
+                description: true,
+                date: true,
+                location: true,
+                image: false
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="featured" className="mt-6">
+            <SectionManager 
+              sectionKey="featured"
+              sectionName="Featured"
+              fields={{
+                title: true,
+                subtitle: true,
+                description: true,
+                date: false,
+                location: false,
+                image: true
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="certifications" className="mt-6">
+            <SectionManager 
+              sectionKey="certifications"
+              sectionName="Certifications"
+              fields={{
+                title: true,
+                subtitle: true,
+                description: true,
+                date: true,
+                location: true,
+                image: true
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="skills" className="mt-6">
+            <SectionManager 
+              sectionKey="skills"
+              sectionName="Skills"
+              fields={{
+                title: true,
+                subtitle: false,
+                description: true,
+                date: false,
+                location: false,
+                image: false
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="education" className="mt-6">
+            <SectionManager 
+              sectionKey="education"
+              sectionName="Education"
+              fields={{
+                title: true,
+                subtitle: true,
+                description: true,
+                date: true,
+                location: true,
+                image: false
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="content" className="mt-6">
