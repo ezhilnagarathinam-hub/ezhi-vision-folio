@@ -10,6 +10,7 @@ import ContentEditor from '@/components/admin/ContentEditor';
 import BusinessManager from '@/components/admin/BusinessManager';
 import ServicesManager from '@/components/admin/ServicesManager';
 import SectionManager from '@/components/admin/SectionManager';
+import StoreManager from '@/components/admin/StoreManager';
 
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -62,6 +63,7 @@ const Admin = () => {
           <ScrollArea className="w-full">
             <TabsList className="inline-flex w-max">
               <TabsTrigger value="posts">Posts</TabsTrigger>
+              <TabsTrigger value="store">Store</TabsTrigger>
               <TabsTrigger value="business">Business</TabsTrigger>
               <TabsTrigger value="services">Services</TabsTrigger>
               <TabsTrigger value="experience">Experience</TabsTrigger>
@@ -76,6 +78,10 @@ const Admin = () => {
 
           <TabsContent value="posts" className="mt-6">
             <PostsManager />
+          </TabsContent>
+
+          <TabsContent value="store" className="mt-6">
+            <StoreManager />
           </TabsContent>
 
           <TabsContent value="business" className="mt-6">
