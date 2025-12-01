@@ -124,6 +124,13 @@ const Index = () => {
             >
               My Blog
             </Button>
+            <Button 
+              variant="ghost"
+              onClick={() => navigate('/store')}
+              className="text-foreground hover:text-primary"
+            >
+              Store
+            </Button>
             {user ? (
               <Button 
                 onClick={() => navigate('/admin')}
