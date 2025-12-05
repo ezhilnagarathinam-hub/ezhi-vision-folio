@@ -243,36 +243,21 @@ const Index = () => {
                 )}
               </div>
 
-              {/* Earlier Posts Sidebar */}
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-foreground mb-6">Earlier Posts</h3>
-                {sidebarPosts.length > 0 ? (
-                  <div className="space-y-3">
-                    {sidebarPosts.map((post) => (
-                      <Card 
-                        key={post.id} 
-                        className="p-4 border border-border hover:border-primary hover:shadow-lg transition-all cursor-pointer"
-                        onClick={() => {
-                          setSelectedPost(post);
-                          setPostDialogOpen(true);
-                        }}
-                      >
-                        <h4 className="font-semibold text-foreground mb-2 line-clamp-2">{post.title}</h4>
-                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{post.excerpt}</p>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(post.created_at).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground text-sm">No earlier posts yet.</p>
-                )}
+              {/* Standing Image Space */}
+              <div className="flex items-center justify-center h-full">
+                <div className="relative w-full h-full min-h-[400px] rounded-2xl overflow-hidden shadow-xl">
+                  {heroContent.standingImage ? (
+                    <img 
+                      src={heroContent.standingImage} 
+                      alt="Ezhil - Standing Portrait"
+                      className="w-full h-full object-cover object-top"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/10 to-muted flex items-center justify-center">
+                      <p className="text-muted-foreground text-center px-4">Standing image will appear here</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -341,7 +326,7 @@ const Index = () => {
           {sidebarPosts.length > 0 && (
             <aside className="lg:col-span-1">
               <div className="sticky top-24 space-y-4">
-                <h3 className="text-2xl font-bold text-foreground mb-6">More Posts</h3>
+                <h3 className="text-2xl font-bold text-foreground mb-6">Earlier Posts</h3>
                 {sidebarPosts.map((post) => (
                   <Card 
                     key={post.id} 
