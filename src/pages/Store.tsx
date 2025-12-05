@@ -135,7 +135,7 @@ const Store = () => {
                     </p>
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold text-primary">
-                        ₹{product.price.toLocaleString()}
+                        ₹{product.price.toLocaleString('en-IN')}
                       </span>
                       <Button size="sm" className="bg-primary hover:bg-primary/90">
                         View Details

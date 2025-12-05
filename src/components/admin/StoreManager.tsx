@@ -242,13 +242,13 @@ const StoreManager = () => {
             {products.map((product) => (
               <Card key={product.id} className="p-6">
                 <div className="flex items-start gap-4">
-                  {product.image && (
+                  <div className="w-20 h-20 flex-shrink-0 bg-muted rounded-lg overflow-hidden">
                     <img
-                      src={product.image}
+                      src={product.image || '/placeholder.svg'}
                       alt={product.name}
-                      className="w-24 h-24 object-cover rounded-lg"
+                      className="w-20 h-20 object-cover"
                     />
-                  )}
+                  </div>
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
                       <div>
@@ -277,7 +277,7 @@ const StoreManager = () => {
                       </div>
                     </div>
                     <p className="text-muted-foreground mb-2">{product.description}</p>
-                    <p className="text-2xl font-bold text-primary">₹{product.price.toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-primary">₹{product.price.toLocaleString('en-IN')}</p>
                     <p className="text-sm text-muted-foreground mt-2">
                       Status: {product.available ? '✅ Available' : '❌ Unavailable'}
                     </p>
