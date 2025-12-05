@@ -73,18 +73,27 @@ const ProductCheckout = () => {
       return;
     }
 
-    toast({
-      title: "Order Placed!",
-      description: "Thank you for your order. We will contact you shortly to confirm payment.",
-    });
+    const totalAmount = product ? product.price * quantity : 0;
 
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      notes: ''
+    // If free product, just show success
+    if (totalAmount === 0) {
+      toast({
+        title: "Order Placed!",
+        description: "Thank you for your order. We will contact you shortly.",
+      });
+      setFormData({ name: '', email: '', phone: '', address: '', notes: '' });
+      return;
+    }
+
+    // Redirect to UPI payment app
+    const upiDeepLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(`Payment for ${product?.name || 'Order'}`)}`;
+    
+    // Open UPI app
+    window.location.href = upiDeepLink;
+
+    toast({
+      title: "Redirecting to payment...",
+      description: "Complete payment in your UPI app, then return to confirm your order.",
     });
   };
 
