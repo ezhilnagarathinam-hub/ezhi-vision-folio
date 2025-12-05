@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, ShoppingBag, QrCode, Copy, Check } from "lucide-react";
+import { ArrowLeft, ShoppingBag, QrCode, Copy, Check, Plus, Minus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Product {
@@ -25,6 +25,7 @@ const ProductCheckout = () => {
   const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
   const [copied, setCopied] = useState(false);
+  const [quantity, setQuantity] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -139,10 +140,43 @@ const ProductCheckout = () => {
                     <p className="text-muted-foreground text-sm mb-2">
                       {product.description}
                     </p>
-                    <p className="text-2xl font-bold text-primary">
-                      ₹{product.price.toLocaleString()}
+                    <p className="text-lg text-muted-foreground">
+                      ₹{product.price.toLocaleString('en-IN')} × {quantity}
                     </p>
                   </div>
+                </div>
+                
+                {/* Quantity Selector */}
+                <div className="mt-4 pt-4 border-t">
+                  <Label className="text-sm text-muted-foreground mb-2 block">Quantity</Label>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      disabled={quantity <= 1}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                    <span className="text-xl font-bold w-12 text-center">{quantity}</span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setQuantity(quantity + 1)}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Total */}
+                <div className="mt-4 pt-4 border-t flex justify-between items-center">
+                  <span className="text-lg font-semibold">Total</span>
+                  <span className="text-2xl font-bold text-primary">
+                    ₹{(product.price * quantity).toLocaleString('en-IN')}
+                  </span>
                 </div>
               </Card>
 
@@ -182,7 +216,7 @@ const ProductCheckout = () => {
                   <div>
                     <Label className="text-sm text-muted-foreground">Amount to Pay</Label>
                     <p className="text-3xl font-bold text-primary">
-                      ₹{product.price.toLocaleString()}
+                      ₹{(product.price * quantity).toLocaleString('en-IN')}
                     </p>
                   </div>
 
