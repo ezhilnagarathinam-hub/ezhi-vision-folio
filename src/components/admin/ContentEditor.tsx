@@ -23,7 +23,7 @@ const ContentEditor = () => {
   const [saving, setSaving] = useState(false);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [currentImageSrc, setCurrentImageSrc] = useState("");
-  const [currentImageType, setCurrentImageType] = useState<"profile" | "background">("profile");
+  const [currentImageType, setCurrentImageType] = useState<"profile" | "background" | "standing">("profile");
   const [currentSectionKey, setCurrentSectionKey] = useState("");
   const { toast } = useToast();
 
@@ -76,7 +76,7 @@ const ContentEditor = () => {
   const handleImageSelect = (
     file: File,
     sectionKey: string,
-    imageType: "profile" | "background"
+    imageType: "profile" | "background" | "standing"
   ) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -111,7 +111,8 @@ const ContentEditor = () => {
       };
 
       await updateSection(currentSectionKey, updatedContent);
-      toast({ title: `${currentImageType === "profile" ? "Profile" : "Background"} image updated successfully` });
+      const imageLabel = currentImageType === "profile" ? "Profile" : currentImageType === "background" ? "Background" : "Standing";
+      toast({ title: `${imageLabel} image updated successfully` });
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -192,6 +193,21 @@ const ContentEditor = () => {
           />
           {content.backgroundImage && (
             <img src={content.backgroundImage} alt="Background preview" className="w-full h-32 object-cover rounded-lg mt-2" />
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="standing-image">Standing Photo (Recommended: Portrait 600×900px)</Label>
+          <Input
+            id="standing-image"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageSelect(file, section.section_key, "standing");
+            }}
+          />
+          {content.standingImage && (
+            <img src={content.standingImage} alt="Standing preview" className="w-32 h-48 object-cover rounded-lg mt-2" />
           )}
         </div>
       </div>
@@ -316,9 +332,9 @@ const ContentEditor = () => {
         onOpenChange={setCropDialogOpen}
         imageSrc={currentImageSrc}
         onCropComplete={handleCropComplete}
-        aspectRatio={currentImageType === "profile" ? 1 : 16 / 9}
+        aspectRatio={currentImageType === "profile" ? 1 : currentImageType === "standing" ? 2 / 3 : 16 / 9}
         circularCrop={currentImageType === "profile"}
-        title={`Crop ${currentImageType === "profile" ? "Profile" : "Background"} Image`}
+        title={`Crop ${currentImageType === "profile" ? "Profile" : currentImageType === "standing" ? "Standing" : "Background"} Image`}
       />
     </div>
   );
