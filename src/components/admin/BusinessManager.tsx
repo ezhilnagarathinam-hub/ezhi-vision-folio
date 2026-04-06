@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Loader2, Upload, X } from 'lucide-react';
 
@@ -16,6 +17,7 @@ interface Business {
 }
 
 const BusinessManager = () => {
+  const [enabled, setEnabled] = useState(true);
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<number | null>(null);
@@ -42,8 +44,9 @@ const BusinessManager = () => {
       if (error && error.code !== 'PGRST116') throw error;
       
       if (data) {
-        const content = data.content as { businesses?: Business[] };
+        const content = data.content as { businesses?: Business[]; enabled?: boolean };
         setBusinesses(content.businesses || []);
+        setEnabled(content.enabled !== false);
       } else {
         // Create initial record if it doesn't exist
         await supabase
@@ -51,7 +54,7 @@ const BusinessManager = () => {
           .insert([{
             section_key: 'business',
             section_name: 'My Business',
-            content: { businesses: [] }
+            content: { businesses: [], enabled: true }
           }]);
       }
     } catch (error: any) {
@@ -72,7 +75,7 @@ const BusinessManager = () => {
         .upsert([{
           section_key: 'business',
           section_name: 'My Business',
-          content: { businesses: updatedBusinesses } as any
+          content: { businesses: updatedBusinesses, enabled } as any
         }], { onConflict: 'section_key' });
 
       if (error) throw error;
@@ -131,8 +134,32 @@ const BusinessManager = () => {
     );
   }
 
+  const handleToggle = async (value: boolean) => {
+    setEnabled(value);
+    try {
+      const { error } = await supabase
+        .from('editable_content')
+        .upsert([{
+          section_key: 'business',
+          section_name: 'My Business',
+          content: { businesses, enabled: value } as any
+        }], { onConflict: 'section_key' });
+      if (error) throw error;
+      toast({ title: `My Business section ${value ? 'enabled' : 'disabled'}` });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+    }
+  };
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Section Visibility</h2>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="business-toggle">Show on website</Label>
+          <Switch id="business-toggle" checked={enabled} onCheckedChange={handleToggle} />
+        </div>
+      </div>
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-6">
           {editing !== null ? 'Edit Business' : 'Add New Business'}

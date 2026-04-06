@@ -115,8 +115,8 @@ const Index = () => {
   const missionContent = content.mission || {};
   const visionContent = content.vision || {};
   const contactContent = content.contact || {};
-  const businessContent = content.business || { businesses: [] };
-  const servicesContent = content.services || { services: [] };
+  const businessContent = content.business || { businesses: [], enabled: true };
+  const servicesContent = content.services || { services: [], enabled: true };
   const experienceContent = content.experience || { enabled: true, items: [] };
   const featuredContent = content.featured || { enabled: true, items: [] };
   const certificationsContent = content.certifications || { enabled: true, items: [] };
@@ -377,6 +377,7 @@ const Index = () => {
       </div>
 
       {/* My Business Section */}
+      {businessContent.enabled !== false && (
       <section className="py-16 px-4 bg-muted/50">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-4 mb-12">
@@ -408,8 +409,10 @@ const Index = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Services */}
+      {servicesContent.enabled !== false && (
       <section className="py-16 px-4 bg-secondary/20">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-4 mb-12">
@@ -456,6 +459,7 @@ const Index = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Experience Section */}
       {experienceContent.enabled && experienceContent.items?.length > 0 && (

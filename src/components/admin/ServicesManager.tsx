@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 
@@ -17,6 +18,7 @@ interface Service {
 }
 
 const ServicesManager = () => {
+  const [enabled, setEnabled] = useState(true);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<number | null>(null);
@@ -44,8 +46,9 @@ const ServicesManager = () => {
       if (error && error.code !== 'PGRST116') throw error;
       
       if (data) {
-        const content = data.content as { services?: Service[] };
+        const content = data.content as { services?: Service[]; enabled?: boolean };
         setServices(content.services || []);
+        setEnabled(content.enabled !== false);
       } else {
         // Create initial record if it doesn't exist
         await supabase
@@ -53,7 +56,7 @@ const ServicesManager = () => {
           .insert([{
             section_key: 'services',
             section_name: 'Services & Contributions',
-            content: { services: [] }
+            content: { services: [], enabled: true }
           }]);
       }
     } catch (error: any) {
@@ -74,7 +77,7 @@ const ServicesManager = () => {
         .upsert([{
           section_key: 'services',
           section_name: 'Services & Contributions',
-          content: { services: updatedServices } as any
+          content: { services: updatedServices, enabled } as any
         }], { onConflict: 'section_key' });
 
       if (error) throw error;
@@ -149,8 +152,32 @@ const ServicesManager = () => {
     );
   }
 
+  const handleToggle = async (value: boolean) => {
+    setEnabled(value);
+    try {
+      const { error } = await supabase
+        .from('editable_content')
+        .upsert([{
+          section_key: 'services',
+          section_name: 'Services & Contributions',
+          content: { services, enabled: value } as any
+        }], { onConflict: 'section_key' });
+      if (error) throw error;
+      toast({ title: `Services section ${value ? 'enabled' : 'disabled'}` });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+    }
+  };
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Section Visibility</h2>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="services-toggle">Show on website</Label>
+          <Switch id="services-toggle" checked={enabled} onCheckedChange={handleToggle} />
+        </div>
+      </div>
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-6">
           {editing !== null ? 'Edit Service' : 'Add New Service'}
