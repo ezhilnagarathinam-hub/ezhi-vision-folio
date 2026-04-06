@@ -412,6 +412,7 @@ const Index = () => {
       )}
 
       {/* Services */}
+      {servicesContent.enabled !== false && (
       <section className="py-16 px-4 bg-secondary/20">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-4 mb-12">
@@ -458,6 +459,7 @@ const Index = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Experience Section */}
       {experienceContent.enabled && experienceContent.items?.length > 0 && (
