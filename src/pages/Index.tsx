@@ -115,8 +115,8 @@ const Index = () => {
   const missionContent = content.mission || {};
   const visionContent = content.vision || {};
   const contactContent = content.contact || {};
-  const businessContent = content.business || { businesses: [] };
-  const servicesContent = content.services || { services: [] };
+  const businessContent = content.business || { businesses: [], enabled: true };
+  const servicesContent = content.services || { services: [], enabled: true };
   const experienceContent = content.experience || { enabled: true, items: [] };
   const featuredContent = content.featured || { enabled: true, items: [] };
   const certificationsContent = content.certifications || { enabled: true, items: [] };
