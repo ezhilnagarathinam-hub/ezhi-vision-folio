@@ -634,39 +634,47 @@ const Index = () => {
           </p>
           
           <div className="flex flex-wrap justify-center gap-4">
-            <Button 
-              size="lg" 
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
-              onClick={() => window.open(contactContent.instagram || 'https://instagram.com', '_blank')}
-            >
-              <Instagram className="w-5 h-5 mr-2" />
-              Instagram
-            </Button>
-            <Button 
-              size="lg" 
-              className="bg-[#FF0000] hover:bg-[#CC0000] text-white font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
-              onClick={() => window.open(contactContent.youtube || 'https://youtube.com', '_blank')}
-            >
-              <Youtube className="w-5 h-5 mr-2" />
-              YouTube
-            </Button>
-            <Button 
-              size="lg" 
-              className="bg-[#0077B5] hover:bg-[#006097] text-white font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
-              onClick={() => window.open(contactContent.linkedin || 'https://linkedin.com', '_blank')}
-            >
-              <Linkedin className="w-5 h-5 mr-2" />
-              LinkedIn
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-2 border-foreground/20 hover:border-primary hover:text-primary font-semibold px-8 py-6 text-lg rounded-full transition-all"
-              onClick={() => window.location.href = `mailto:${contactContent.email || 'contact@eadreamsupporters.com'}`}
-            >
-              <Mail className="w-5 h-5 mr-2" />
-              Email
-            </Button>
+            {contactContent.instagram && (
+              <Button 
+                size="lg" 
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
+                onClick={() => window.open(contactContent.instagram, '_blank')}
+              >
+                <Instagram className="w-5 h-5 mr-2" />
+                Instagram
+              </Button>
+            )}
+            {contactContent.youtube && (
+              <Button 
+                size="lg" 
+                className="bg-[#FF0000] hover:bg-[#CC0000] text-white font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
+                onClick={() => window.open(contactContent.youtube, '_blank')}
+              >
+                <Youtube className="w-5 h-5 mr-2" />
+                YouTube
+              </Button>
+            )}
+            {contactContent.linkedin && (
+              <Button 
+                size="lg" 
+                className="bg-[#0077B5] hover:bg-[#006097] text-white font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
+                onClick={() => window.open(contactContent.linkedin, '_blank')}
+              >
+                <Linkedin className="w-5 h-5 mr-2" />
+                LinkedIn
+              </Button>
+            )}
+            {contactContent.email && (
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-2 border-foreground/20 hover:border-primary hover:text-primary font-semibold px-8 py-6 text-lg rounded-full transition-all"
+                onClick={() => window.location.href = `mailto:${contactContent.email}`}
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                Email
+              </Button>
+            )}
           </div>
         </div>
       </section>
