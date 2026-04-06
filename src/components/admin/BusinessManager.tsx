@@ -75,7 +75,7 @@ const BusinessManager = () => {
         .upsert([{
           section_key: 'business',
           section_name: 'My Business',
-          content: { businesses: updatedBusinesses } as any
+          content: { businesses: updatedBusinesses, enabled } as any
         }], { onConflict: 'section_key' });
 
       if (error) throw error;

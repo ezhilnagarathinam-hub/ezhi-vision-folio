@@ -77,7 +77,7 @@ const ServicesManager = () => {
         .upsert([{
           section_key: 'services',
           section_name: 'Services & Contributions',
-          content: { services: updatedServices } as any
+          content: { services: updatedServices, enabled } as any
         }], { onConflict: 'section_key' });
 
       if (error) throw error;
