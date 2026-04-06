@@ -134,8 +134,32 @@ const BusinessManager = () => {
     );
   }
 
+  const handleToggle = async (value: boolean) => {
+    setEnabled(value);
+    try {
+      const { error } = await supabase
+        .from('editable_content')
+        .upsert([{
+          section_key: 'business',
+          section_name: 'My Business',
+          content: { businesses, enabled: value } as any
+        }], { onConflict: 'section_key' });
+      if (error) throw error;
+      toast({ title: `My Business section ${value ? 'enabled' : 'disabled'}` });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+    }
+  };
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Section Visibility</h2>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="business-toggle">Show on website</Label>
+          <Switch id="business-toggle" checked={enabled} onCheckedChange={handleToggle} />
+        </div>
+      </div>
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-6">
           {editing !== null ? 'Edit Business' : 'Add New Business'}

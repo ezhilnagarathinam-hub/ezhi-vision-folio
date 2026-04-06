@@ -152,6 +152,23 @@ const ServicesManager = () => {
     );
   }
 
+  const handleToggle = async (value: boolean) => {
+    setEnabled(value);
+    try {
+      const { error } = await supabase
+        .from('editable_content')
+        .upsert([{
+          section_key: 'services',
+          section_name: 'Services & Contributions',
+          content: { services, enabled: value } as any
+        }], { onConflict: 'section_key' });
+      if (error) throw error;
+      toast({ title: `Services section ${value ? 'enabled' : 'disabled'}` });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card className="p-6">
