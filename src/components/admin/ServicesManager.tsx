@@ -18,6 +18,7 @@ interface Service {
 }
 
 const ServicesManager = () => {
+  const [enabled, setEnabled] = useState(true);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<number | null>(null);
