@@ -46,8 +46,9 @@ const ServicesManager = () => {
       if (error && error.code !== 'PGRST116') throw error;
       
       if (data) {
-        const content = data.content as { services?: Service[] };
+        const content = data.content as { services?: Service[]; enabled?: boolean };
         setServices(content.services || []);
+        setEnabled(content.enabled !== false);
       } else {
         // Create initial record if it doesn't exist
         await supabase
