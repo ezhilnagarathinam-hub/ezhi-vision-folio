@@ -658,10 +658,10 @@ const Index = () => {
       <footer className="py-12 px-4 bg-foreground text-background">
         <div className="container mx-auto max-w-6xl text-center">
           <p className="text-lg mb-2">
-            Copyright © {new Date().getFullYear()} Ezhil | EA Dream Supporters
+            Copyright © 2026 Ezhilmozhi.com
           </p>
           <p className="text-background/70">
-            Designed with ❤️ using Lovable
+            Designed with ❤️ by EZHIL
           </p>
         </div>
       </footer>
