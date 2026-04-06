@@ -59,6 +59,22 @@ const Index = () => {
   useEffect(() => {
     fetchContent();
     fetchPosts();
+
+    // Realtime subscription for editable_content changes
+    const channel = supabase
+      .channel('editable-content-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'editable_content' },
+        () => {
+          fetchContent();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchContent = async () => {
