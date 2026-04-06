@@ -227,6 +227,26 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Standing Image Section */}
+      <section className="py-12 px-4 bg-muted/20">
+        <div className="container mx-auto max-w-4xl">
+          <div className="relative w-full max-w-md mx-auto min-h-[500px] rounded-2xl overflow-hidden shadow-xl">
+            {heroContent.standingImage ? (
+              <img 
+                src={`${heroContent.standingImage}${heroContent.standingImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                alt="Ezhil - Standing Portrait"
+                className="w-full h-full object-cover object-top"
+                key={heroContent.standingImage}
+              />
+            ) : (
+              <div className="w-full h-full min-h-[500px] bg-gradient-to-br from-primary/10 to-muted flex items-center justify-center">
+                <p className="text-muted-foreground text-center px-4">Standing image will appear here</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Posts Section */}
       {posts.length > 0 && (
         <section className="py-16 px-4 bg-muted/30">
