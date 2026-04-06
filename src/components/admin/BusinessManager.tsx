@@ -17,6 +17,7 @@ interface Business {
 }
 
 const BusinessManager = () => {
+  const [enabled, setEnabled] = useState(true);
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<number | null>(null);
