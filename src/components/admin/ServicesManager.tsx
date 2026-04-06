@@ -56,7 +56,7 @@ const ServicesManager = () => {
           .insert([{
             section_key: 'services',
             section_name: 'Services & Contributions',
-            content: { services: [] }
+            content: { services: [], enabled: true }
           }]);
       }
     } catch (error: any) {
