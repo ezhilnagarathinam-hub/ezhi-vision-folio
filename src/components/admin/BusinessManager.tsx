@@ -54,7 +54,7 @@ const BusinessManager = () => {
           .insert([{
             section_key: 'business',
             section_name: 'My Business',
-            content: { businesses: [] }
+            content: { businesses: [], enabled: true }
           }]);
       }
     } catch (error: any) {
