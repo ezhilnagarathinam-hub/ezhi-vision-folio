@@ -377,6 +377,7 @@ const Index = () => {
       </div>
 
       {/* My Business Section */}
+      {businessContent.enabled !== false && (
       <section className="py-16 px-4 bg-muted/50">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-4 mb-12">
@@ -408,6 +409,7 @@ const Index = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Services */}
       <section className="py-16 px-4 bg-secondary/20">
