@@ -44,8 +44,9 @@ const BusinessManager = () => {
       if (error && error.code !== 'PGRST116') throw error;
       
       if (data) {
-        const content = data.content as { businesses?: Business[] };
+        const content = data.content as { businesses?: Business[]; enabled?: boolean };
         setBusinesses(content.businesses || []);
+        setEnabled(content.enabled !== false);
       } else {
         // Create initial record if it doesn't exist
         await supabase
