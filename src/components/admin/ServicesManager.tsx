@@ -171,6 +171,13 @@ const ServicesManager = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Section Visibility</h2>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="services-toggle">Show on website</Label>
+          <Switch id="services-toggle" checked={enabled} onCheckedChange={handleToggle} />
+        </div>
+      </div>
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-6">
           {editing !== null ? 'Edit Service' : 'Add New Service'}
