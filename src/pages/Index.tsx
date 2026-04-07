@@ -167,22 +167,13 @@ const Index = () => {
             >
               Store
             </Button>
-            {user ? (
+            {user && isAdmin && (
               <Button 
                 onClick={() => navigate('/admin')}
                 className="bg-primary hover:bg-primary/90"
               >
-                {isAdmin ? <Lock className="w-4 h-4 mr-2" /> : null}
-                {isAdmin ? 'Admin Panel' : 'Dashboard'}
-              </Button>
-            ) : (
-              <Button 
-                onClick={() => navigate('/auth')}
-                variant="outline"
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-              >
-                <LogIn className="w-4 h-4 mr-2" />
-                Login
+                <Lock className="w-4 h-4 mr-2" />
+                Admin Panel
               </Button>
             )}
           </div>
