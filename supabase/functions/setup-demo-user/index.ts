@@ -22,27 +22,41 @@ Deno.serve(async (req) => {
       }
     )
 
-    const demoEmail = 'demo@eadreamsupporters.com'
-    const demoPassword = 'demo123456'
+    const adminEmail = 'ezhilnagarathinam@gmail.com'
+    const adminPassword = 'Ezhil07@7'
 
-    // Check if demo user already exists
+    // Check if admin user already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
-    const demoUser = existingUsers?.users.find(u => u.email === demoEmail)
+    const adminUser = existingUsers?.users.find(u => u.email === adminEmail)
 
-    if (demoUser) {
+    if (adminUser) {
+      // Ensure admin role exists
+      const { data: existingRole } = await supabaseAdmin
+        .from('user_roles')
+        .select('*')
+        .eq('user_id', adminUser.id)
+        .eq('role', 'admin')
+        .maybeSingle()
+
+      if (!existingRole) {
+        await supabaseAdmin
+          .from('user_roles')
+          .insert({ user_id: adminUser.id, role: 'admin' })
+      }
+
       return new Response(
-        JSON.stringify({ message: 'Demo user already exists', userId: demoUser.id }),
+        JSON.stringify({ message: 'Admin user already exists', userId: adminUser.id }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Create demo user
+    // Create admin user
     const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-      email: demoEmail,
-      password: demoPassword,
+      email: adminEmail,
+      password: adminPassword,
       email_confirm: true,
       user_metadata: {
-        full_name: 'Demo Admin'
+        full_name: 'Ezhil Nakharathinam'
       }
     })
 
@@ -60,7 +74,7 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ 
-        message: 'Demo user created successfully', 
+        message: 'Admin user created successfully', 
         userId: newUser.user.id 
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
