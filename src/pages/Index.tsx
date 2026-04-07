@@ -253,7 +253,7 @@ const Index = () => {
           <div className="relative w-full max-w-md mx-auto min-h-[500px] rounded-2xl overflow-hidden shadow-xl">
             {heroContent.standingImage ? (
               <img 
-                src={`${heroContent.standingImage}${heroContent.standingImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                src={heroContent.standingImage}
                 alt="Ezhil - Standing Portrait"
                 className="w-full h-full object-cover object-top"
                 key={heroContent.standingImage}
