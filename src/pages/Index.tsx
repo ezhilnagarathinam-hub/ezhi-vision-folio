@@ -123,8 +123,28 @@ const Index = () => {
   const skillsContent = content.skills || { enabled: true, items: [] };
   const educationContent = content.education || { enabled: true, items: [] };
   
+  const [contentLoaded, setContentLoaded] = useState(false);
+
   const heroBackgroundUrl = heroContent.backgroundImage || heroBackground;
   const profileImageUrl = heroContent.profileImage || profileImage;
+
+  // Track when content is loaded
+  useEffect(() => {
+    if (Object.keys(content).length > 0) {
+      setContentLoaded(true);
+    }
+  }, [content]);
+
+  if (!contentLoaded) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-primary/20"></div>
+          <div className="h-4 w-32 bg-muted rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
