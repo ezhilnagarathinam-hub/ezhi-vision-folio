@@ -49,41 +49,6 @@ const Auth = () => {
     }
   };
 
-  const handleDemoLogin = async () => {
-    setEmail('demo@eadreamsupporters.com');
-    setPassword('demo123456');
-    setLoading(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: 'demo@eadreamsupporters.com',
-        password: 'demo123456',
-      });
-
-      if (error) {
-        toast({
-          title: 'Demo Login Failed',
-          description: error.message,
-          variant: 'destructive',
-        });
-      } else {
-        toast({
-          title: 'Demo Login Successful',
-          description: 'Redirecting to admin panel...',
-        });
-        navigate('/admin');
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'An unexpected error occurred',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-background px-4">
       <Card className="w-full max-w-md p-8 border-2 border-border shadow-2xl">
